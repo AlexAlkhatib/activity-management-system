@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+  <meta charset="UTF-8">
+  <title>Activity Management System</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+</head>
+<body>
+<nav class="navbar navbar-expand-md bg-dark navbar-dark">
+  <!-- Brand -->
+  <a class="navbar-brand" href="#">Activity Management System</a>
+
+  <!-- Toggler/collapsibe Button -->
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <!-- Navbar links -->
+  <div class="collapse navbar-collapse" id="collapsibleNavbar">
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link" th:href="@{/activities}">Activity</a>
+      </li>
+      <div id="navbar" class="collapse navbar-collapse">
+        <ul class="nav navbar-nav">
+          <li sec:authorize="isAuthenticated()"><a th:href="@{/logout}">Logout</a></li>
+        </ul>
+      </div>
+    </ul>
+  </div>
+</nav>
+<div class="container">
+  <div class="row">
+    <h1>Activities List</h1>
+  </div>
+
+  <div class="row mb-3">
+    <div class="col-md-6">
+      <form action="#" th:action="@{/activities/new}" th:method="get">
+        <div class="input-group">
+          <input type="text" class="form-control" name="place" placeholder="Search by place">
+          <div class="input-group-append">
+            <button class="btn btn-primary" type="submit">Search</button>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="col-md-6">
+      <form action="#" th:action="@{/activities/new}" th:method="get">
+        <div class="input-group">
+          <input type="text" class="form-control" name="name" placeholder="Search by name">
+          <div class="input-group-append">
+            <button class="btn btn-primary" type="submit">Search</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <table class="table table-striped table-bordered">
+    <thead class="table-dark">
+    <tr>
+      <th>Name</th>
+      <th>Place</th>
+      <th>Club</th>
+      <th>Category</th>
+      <th>Price</th>
+      <th>Note</th>
+      <th>Select</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <tr th:each = "activity : ${activities}">
+      <td th:text = "${activity.name}"></td>
+      <td th:text = "${activity.place}"></td>
+      <td th:text = "${activity.club}"></td>
+      <td th:text = "${activity.category}"></td>
+      <td th:text = "${activity.price}"></td>
+      <td th:text = "${activity.note}"></td>
+      <td><input type="checkbox" th:name="selectedActivities" th:value="${activity.id}" /></td>
+    </tr>
+    </tbody>
+  </table>
+  <button type="submit" class = "btn btn-primary">
+    Submit
+  </button>
+</div>
+</body>
+</html>
