@@ -140,7 +140,7 @@ La vidéo de présentation du projet est disponible ici :
 ## 👤 À propos
 
 Développeur Java / Spring passionné, je réalise ce type de projets pour monter en compétences full-stack et comprendre les enjeux réels d’applications JEE robustes.
-Contact : **[alex.alkhatib@etu.univ-tours.fr](mailto:alex.alkhatib@etu.univ-tours.fr)**
+Contact : **[GitHub](https://github.com/AlexAlkhatib)**
 
 
 ## 📄 Licence
