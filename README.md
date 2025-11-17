@@ -1,4 +1,4 @@
-# **Activity Management System — Application d’accompagnement d’activités physiques**
+# 🏃 **Activity Management System — Application d’accompagnement d’activités physiques**
 
 **Activity Management System** est une application Web JEE permettant d’accompagner des utilisateurs dans leurs activités physiques et thérapeutiques.
 L’objectif est de proposer un système simple et intuitif pour **suivre**, **noter**, et **gérer des activités personnalisées**, tout en garantissant une architecture professionnelle basée sur **Spring Boot**, **MVC**, et une base de données relationnelle.
