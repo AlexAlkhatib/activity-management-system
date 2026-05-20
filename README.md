@@ -61,13 +61,13 @@ Ce projet a été conçu dans un cadre **personnel**, afin de renforcer mes comp
 
 ## 🧠 Compétences démontrées
 
-✔ Conception et développement d’une application Web JEE moderne
-✔ Architecture Spring Boot + MVC maîtrisée
-✔ Sécurisation avancée (Spring Security)
-✔ Gestion d’une base de données relationnelle (MySQL + JPA)
-✔ Création d’interfaces dynamiques avec Thymeleaf
-✔ Gestion des entités, repositories, services et contrôleurs
-✔ Compréhension des enjeux d’un accompagnement thérapeutique via des activités personnalisées
+- ✔ Conception et développement d’une application Web JEE moderne
+- ✔ Architecture Spring Boot + MVC maîtrisée
+- ✔ Sécurisation avancée (Spring Security)
+- ✔ Gestion d’une base de données relationnelle (MySQL + JPA)
+- ✔ Création d’interfaces dynamiques avec Thymeleaf
+- ✔ Gestion des entités, repositories, services et contrôleurs
+- ✔ Compréhension des enjeux d’un accompagnement thérapeutique via des activités personnalisées
 
 
 ## 📂 Structure du projet
