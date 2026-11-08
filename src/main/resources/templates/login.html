@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Connexion')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: nav('')}"></header>
+
+<main class="auth-shell">
+    <section class="auth-visual">
+        <p class="eyebrow">Bon retour</p>
+        <h1>Chaque séance compte.</h1>
+        <p class="lead">
+            Retrouvez votre tableau de bord, vos séries, vos records et vos mesures.
+            La régularité se voit dans les chiffres.
+        </p>
+        <div class="demo-box">
+            <span>Accès démonstration</span>
+            <span><code>demo@fittrack.app</code> · <code>Demo1234!</code></span>
+        </div>
+    </section>
+
+    <section class="auth-panel">
+        <div class="auth-card">
+            <div class="card">
+                <h2>Connexion</h2>
+                <p class="muted small" style="margin-bottom: 1.2rem;">Accédez à votre espace FitTrack.</p>
+
+                <div class="alert alert-danger" th:if="${param.error}">
+                    Identifiants invalides. Vérifiez votre e-mail et votre mot de passe.
+                </div>
+                <div class="alert alert-info" th:if="${param.logout}">
+                    Vous êtes déconnecté. À bientôt !
+                </div>
+                <div class="alert alert-success" th:if="${param.registered}">
+                    <span th:if="${registered != null}" th:text="'Compte créé, ' + ${registered} + ' ! Connectez-vous.'">Compte créé !</span>
+                    <span th:if="${registered == null}">Votre compte a bien été créé. Connectez-vous.</span>
+                </div>
+
+                <form th:action="@{/login}" method="post">
+                    <div class="field" style="margin-bottom: .9rem;">
+                        <label for="username">Adresse e-mail</label>
+                        <input class="input" type="email" id="username" name="username"
+                               placeholder="vous@exemple.fr" autocomplete="username" required autofocus>
+                    </div>
+                    <div class="field" style="margin-bottom: 1.2rem;">
+                        <label for="password">Mot de passe</label>
+                        <input class="input" type="password" id="password" name="password"
+                               placeholder="Votre mot de passe" autocomplete="current-password" required>
+                    </div>
+                    <button class="btn btn-primary btn-block" type="submit">Se connecter</button>
+                </form>
+
+                <p class="auth-alt">
+                    Pas encore de compte ?
+                    <a th:href="@{/register}">Créer un compte gratuitement</a>
+                </p>
+            </div>
+        </div>
+    </section>
+</main>
+
+</body>
+</html>

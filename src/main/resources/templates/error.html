@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Oups')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: nav('')}"></header>
+
+<main class="shell page" style="max-width: 720px;">
+    <article class="card" style="text-align: center; padding: 2.6rem;">
+        <p class="eyebrow">Erreur <span th:text="${status}">500</span></p>
+        <h1 th:text="${status == 404 ? 'Page introuvable' : (status == 403 ? 'Accès refusé' : 'Une erreur est survenue')}">
+            Une erreur est survenue
+        </h1>
+        <p class="muted" th:text="${message != null and !#strings.isEmpty(message) ? message : 'Nous n\'avons pas pu traiter votre demande.'}">
+            Nous n'avons pas pu traiter votre demande.
+        </p>
+        <div style="display: flex; gap: .6rem; justify-content: center; margin-top: 1.4rem; flex-wrap: wrap;">
+            <a class="btn btn-primary" th:href="@{/dashboard}">Retour au tableau de bord</a>
+            <a class="btn btn-ghost" th:href="@{/}">Page d'accueil</a>
+        </div>
+    </article>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

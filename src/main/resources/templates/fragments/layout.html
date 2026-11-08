@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${title} + ' · FitTrack'">FitTrack</title>
+    <meta name="description" content="FitTrack, l'application de suivi d'entraînement : séances, exercices, calories, mesures et objectifs.">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%23c6ff4a'/%3E%3Cpath d='M13 3 4 14h6l-1 7 9-11h-6l1-7z' fill='%23081018'/%3E%3C/svg%3E">
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+
+<header th:fragment="nav(active)" class="topbar">
+    <div class="shell topbar-inner">
+        <a class="brand" th:href="@{/}">
+            <span class="brand-mark" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor"
+                     stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"></path>
+                </svg>
+            </span>
+            <span class="brand-text">Fit<span>Track</span></span>
+        </a>
+
+        <nav class="nav-links" th:if="${currentUser != null}">
+            <a th:href="@{/dashboard}" th:classappend="${active == 'dashboard'} ? 'active' : ''">Tableau de bord</a>
+            <a th:href="@{/workouts}" th:classappend="${active == 'workouts'} ? 'active' : ''">Séances</a>
+            <a th:href="@{/exercises}" th:classappend="${active == 'exercises'} ? 'active' : ''">Exercices</a>
+            <a th:href="@{/measurements}" th:classappend="${active == 'measurements'} ? 'active' : ''">Mesures</a>
+            <a th:href="@{/profile}" th:classappend="${active == 'profile'} ? 'active' : ''">Profil</a>
+        </nav>
+
+        <div class="topbar-actions" th:if="${currentUser != null}">
+            <a class="btn btn-primary btn-sm" th:href="@{/workouts/new}">Nouvelle séance</a>
+            <a class="user-chip" th:href="@{/profile}" th:text="${currentUser.initials}"
+               th:title="${currentUser.fullName}">AM</a>
+            <form th:action="@{/logout}" method="post" class="inline-form">
+                <button class="btn btn-ghost btn-sm" type="submit">Déconnexion</button>
+            </form>
+        </div>
+
+        <div class="topbar-actions" th:if="${currentUser == null}">
+            <a class="btn btn-ghost btn-sm" th:href="@{/login}">Connexion</a>
+            <a class="btn btn-primary btn-sm" th:href="@{/register}">Créer un compte</a>
+        </div>
+    </div>
+</header>
+
+<div th:fragment="flash" class="flash">
+    <div class="alert alert-success" th:if="${message}" th:text="${message}"></div>
+</div>
+
+<footer th:fragment="footer" class="footer">
+    <div class="shell footer-inner">
+        <div>
+            <strong>FitTrack</strong>
+            <span class="muted">Suivi d'entraînement · Spring Boot 3 · Thymeleaf · H2</span>
+        </div>
+        <div class="footer-links">
+            <a th:href="@{/dashboard}">Tableau de bord</a>
+            <a th:href="@{/exercises}">Exercices</a>
+            <span>© 2026 FitTrack</span>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>

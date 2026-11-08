@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${editing ? 'Modifier la séance' : 'Nouvelle séance'})}"></head>
+<body>
+<header th:replace="~{fragments/layout :: nav('workouts')}"></header>
+
+<main class="shell page">
+    <section class="page-head">
+        <div>
+            <p class="eyebrow" th:text="${editing ? 'Modification' : 'Nouvelle entrée'}">Nouvelle entrée</p>
+            <h1 th:text="${editing ? 'Modifier la séance' : 'Enregistrer une séance'}">Enregistrer une séance</h1>
+            <p class="muted">Les calories sont estimées automatiquement à partir du type, de l'intensité, de la durée et de votre poids.</p>
+        </div>
+        <a class="btn btn-ghost" th:href="@{/workouts}">Retour aux séances</a>
+    </section>
+
+    <div class="dashboard-grid">
+        <article class="card">
+            <form th:action="@{${formAction}}" method="post" th:object="${workoutForm}">
+                <div class="form-grid">
+                    <div class="field">
+                        <label for="date">Date</label>
+                        <input class="input" type="date" id="date" th:field="*{date}" required>
+                        <p class="error-text" th:if="${#fields.hasErrors('date')}" th:errors="*{date}"></p>
+                    </div>
+                    <div class="field">
+                        <label for="type">Type de séance</label>
+                        <select class="input" id="type" th:field="*{type}">
+                            <option th:each="t : ${types}" th:value="${t}" th:text="${t.label}">Musculation</option>
+                        </select>
+                        <p class="error-text" th:if="${#fields.hasErrors('type')}" th:errors="*{type}"></p>
+                    </div>
+                    <div class="field">
+                        <label for="durationMinutes">Durée (minutes)</label>
+                        <input class="input" type="number" id="durationMinutes" min="5" max="600"
+                               th:field="*{durationMinutes}" required>
+                        <p class="error-text" th:if="${#fields.hasErrors('durationMinutes')}" th:errors="*{durationMinutes}"></p>
+                    </div>
+                    <div class="field">
+                        <label for="intensity">Intensité</label>
+                        <select class="input" id="intensity" th:field="*{intensity}">
+                            <option th:each="i : ${intensities}" th:value="${i}" th:text="${i.label}">Modérée</option>
+                        </select>
+                        <p class="error-text" th:if="${#fields.hasErrors('intensity')}" th:errors="*{intensity}"></p>
+                    </div>
+                    <div class="field full">
+                        <label for="notes">Notes (optionnel)</label>
+                        <textarea class="input" id="notes" th:field="*{notes}"
+                                  placeholder="Sensations, échauffement, objectifs de la séance..."></textarea>
+                        <p class="error-text" th:if="${#fields.hasErrors('notes')}" th:errors="*{notes}"></p>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button class="btn btn-primary" type="submit" th:text="${editing ? 'Enregistrer les modifications' : 'Créer la séance'}">
+                        Créer la séance
+                    </button>
+                    <a class="btn btn-ghost" th:href="@{/workouts}">Annuler</a>
+                </div>
+            </form>
+        </article>
+
+        <div class="stack">
+            <article class="card">
+                <h2>Comment ça marche ?</h2>
+                <p class="muted small">
+                    Enregistrez d'abord la séance, puis ajoutez les exercices réalisés depuis la page de détail.
+                    Le volume total et les records se mettent à jour automatiquement.
+                </p>
+                <div class="metric-row">
+                    <span class="label">Musculation</span>
+                    <span class="value">MET 5,0</span>
+                </div>
+                <div class="metric-row">
+                    <span class="label">Cardio</span>
+                    <span class="value">MET 8,0</span>
+                </div>
+                <div class="metric-row">
+                    <span class="label">HIIT</span>
+                    <span class="value">MET 9,0</span>
+                </div>
+                <div class="metric-row">
+                    <span class="label">Mobilité</span>
+                    <span class="value">MET 3,0</span>
+                </div>
+            </article>
+
+            <article class="card">
+                <h2>Estimation calorique</h2>
+                <p class="muted small" style="margin-bottom: .6rem;">
+                    Formule utilisée : MET × intensité × 3,5 × poids (kg) ÷ 200 × durée (min).
+                </p>
+                <p class="hint">Le poids retenu est celui de votre dernière mesure corporelle.</p>
+                <a class="btn btn-ghost btn-sm btn-block" th:href="@{/measurements}" style="margin-top: .8rem;">Mettre à jour mon poids</a>
+            </article>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Profil')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: nav('profile')}"></header>
+
+<main class="shell page">
+    <div th:replace="~{fragments/layout :: flash}"></div>
+
+    <section class="page-head">
+        <div>
+            <p class="eyebrow">Mon compte</p>
+            <h1>Profil &amp; objectifs</h1>
+            <p class="muted">Ces informations alimentent le calcul des calories, de l'IMC et du métabolisme.</p>
+        </div>
+        <span class="badge badge-accent" th:text="${currentUser.email}">demo@fittrack.app</span>
+    </section>
+
+    <div class="dashboard-grid">
+        <article class="card">
+            <div class="card-head">
+                <h2>Informations personnelles</h2>
+                <span class="badge" th:text="'Membre depuis ' + ${#temporals.format(currentUser.createdAt, 'MMMM yyyy')}">Membre depuis mars 2026</span>
+            </div>
+            <form th:action="@{/profile}" method="post" th:object="${profileForm}">
+                <div class="form-grid">
+                    <div class="field">
+                        <label for="firstName">Prénom</label>
+                        <input class="input" type="text" id="firstName" th:field="*{firstName}" required>
+                        <p class="error-text" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></p>
+                    </div>
+                    <div class="field">
+                        <label for="lastName">Nom</label>
+                        <input class="input" type="text" id="lastName" th:field="*{lastName}" required>
+                        <p class="error-text" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></p>
+                    </div>
+                    <div class="field">
+                        <label for="birthDate">Date de naissance</label>
+                        <input class="input" type="date" id="birthDate" th:field="*{birthDate}">
+                    </div>
+                    <div class="field">
+                        <label for="gender">Genre</label>
+                        <select class="input" id="gender" th:field="*{gender}">
+                            <option th:each="g : ${genders}" th:value="${g}" th:text="${g.label}">Homme</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="heightCm">Taille (cm)</label>
+                        <input class="input" type="number" step="0.5" min="100" max="250" id="heightCm"
+                               th:field="*{heightCm}">
+                        <p class="error-text" th:if="${#fields.hasErrors('heightCm')}" th:errors="*{heightCm}"></p>
+                    </div>
+                    <div class="field">
+                        <label for="targetWeightKg">Objectif de poids (kg)</label>
+                        <input class="input" type="number" step="0.1" min="30" max="250" id="targetWeightKg"
+                               th:field="*{targetWeightKg}">
+                        <p class="error-text" th:if="${#fields.hasErrors('targetWeightKg')}" th:errors="*{targetWeightKg}"></p>
+                    </div>
+                    <div class="field">
+                        <label for="weeklyGoal">Objectif de séances / semaine</label>
+                        <input class="input" type="number" min="1" max="7" id="weeklyGoal" th:field="*{weeklyGoal}">
+                        <p class="error-text" th:if="${#fields.hasErrors('weeklyGoal')}" th:errors="*{weeklyGoal}"></p>
+                    </div>
+                    <div class="field">
+                        <label for="activityLevel">Niveau d'activité quotidien</label>
+                        <select class="input" id="activityLevel" th:field="*{activityLevel}">
+                            <option th:each="l : ${levels}" th:value="${l}" th:text="${l.label}">Modéré</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-primary" type="submit">Enregistrer le profil</button>
+                    <a class="btn btn-ghost" th:href="@{/dashboard}">Retour au tableau de bord</a>
+                </div>
+            </form>
+        </article>
+
+        <div class="stack">
+            <article class="card">
+                <h2>Indicateurs estimés</h2>
+                <p class="muted small">Mis à jour à partir de votre poids le plus récent.</p>
+                <div class="metric-row">
+                    <span class="label">Poids actuel</span>
+                    <span class="value" th:text="${currentWeight > 0 ? #numbers.formatDecimal(currentWeight, 1, 1) + ' kg' : '—'}">80,1 kg</span>
+                </div>
+                <div class="metric-row">
+                    <span class="label">IMC</span>
+                    <span class="value" th:text="${bmi > 0 ? #numbers.formatDecimal(bmi, 1, 1) : '—'}">25,3</span>
+                </div>
+                <div class="metric-row">
+                    <span class="label">Catégorie IMC</span>
+                    <span class="badge" th:text="${bmiCategory}">Surpoids</span>
+                </div>
+                <div class="metric-row">
+                    <span class="label">Métabolisme de base</span>
+                    <span class="value" th:text="${bmr > 0 ? bmr + ' kcal/jour' : '—'}">1 785 kcal/jour</span>
+                </div>
+                <div class="metric-row">
+                    <span class="label">Dépense totale (TDEE)</span>
+                    <span class="value" th:text="${tdee > 0 ? tdee + ' kcal/jour' : '—'}">2 767 kcal/jour</span>
+                </div>
+            </article>
+
+            <article class="card">
+                <h2>Sécurité du compte</h2>
+                <div class="metric-row">
+                    <span class="label">Rôle</span>
+                    <span class="value" th:text="${#strings.listJoin(currentUser.roles.![name], ', ')}">ROLE_USER</span>
+                </div>
+                <div class="metric-row">
+                    <span class="label">Authentification</span>
+                    <span class="badge badge-blue">BCrypt</span>
+                </div>
+                <p class="muted small" style="margin-top: .8rem;">
+                    Les mots de passe sont hachés avec BCrypt et ne sont jamais stockés en clair.
+                    Chaque compte n'accède qu'à ses propres séances et mesures.
+                </p>
+                <form th:action="@{/logout}" method="post" style="margin-top: .6rem;">
+                    <button class="btn btn-ghost btn-sm btn-block" type="submit">Se déconnecter</button>
+                </form>
+            </article>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

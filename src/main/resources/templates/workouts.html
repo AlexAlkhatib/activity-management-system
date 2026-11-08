@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Séances')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: nav('workouts')}"></header>
+
+<main class="shell page">
+    <div th:replace="~{fragments/layout :: flash}"></div>
+
+    <section class="page-head">
+        <div>
+            <p class="eyebrow">Historique</p>
+            <h1>Mes séances</h1>
+            <p class="muted">Retrouvez, filtrez et complétez vos entraînements.</p>
+        </div>
+        <a class="btn btn-primary" th:href="@{/workouts/new}">Nouvelle séance</a>
+    </section>
+
+    <form method="get" th:action="@{/workouts}" class="card filter-bar" style="margin-bottom: 1rem;">
+        <div class="field">
+            <label for="type">Type de séance</label>
+            <select class="input" id="type" name="type">
+                <option value="" th:selected="${selectedType == null}">Tous les types</option>
+                <option th:each="t : ${types}" th:value="${t}" th:text="${t.label}"
+                        th:selected="${t == selectedType}">Musculation</option>
+            </select>
+        </div>
+        <div class="field">
+            <label for="period">Période</label>
+            <select class="input" id="period" name="period">
+                <option value="7" th:selected="${period == 7}">7 derniers jours</option>
+                <option value="30" th:selected="${period == 30}">30 derniers jours</option>
+                <option value="90" th:selected="${period == 90}">3 derniers mois</option>
+                <option value="3650" th:selected="${period == 3650}">Tout l'historique</option>
+            </select>
+        </div>
+        <button class="btn btn-primary" type="submit">Filtrer</button>
+        <a class="btn btn-ghost" th:href="@{/workouts}">Réinitialiser</a>
+        <div style="margin-left: auto; display: flex; gap: .5rem; flex-wrap: wrap;">
+            <span class="badge" th:text="${#lists.size(workouts)} + ' séance(s)'">12 séance(s)</span>
+            <span class="badge badge-blue" th:text="${totalMinutes} + ' min'">540 min</span>
+            <span class="badge badge-accent" th:text="${totalCalories} + ' kcal'">3 200 kcal</span>
+        </div>
+    </form>
+
+    <article class="card" th:if="${!#lists.isEmpty(workouts)}">
+        <div class="table-wrap">
+            <table class="data">
+                <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th>Durée</th>
+                    <th>Intensité</th>
+                    <th>Calories</th>
+                    <th>Exercices</th>
+                    <th style="text-align: right;">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="w : ${workouts}">
+                    <td>
+                        <a th:href="@{/workouts/{id}(id=${w.id})}"
+                           th:text="${#temporals.format(w.date, 'dd/MM/yyyy')}">08/11/2026</a>
+                    </td>
+                    <td>
+                        <span class="badge" th:classappend="${w.type.cssClass}" th:text="${w.type.label}">Musculation</span>
+                    </td>
+                    <td class="num" th:text="${w.durationMinutes} + ' min'">45 min</td>
+                    <td>
+                        <span class="badge" th:classappend="${w.intensity.cssClass}" th:text="${w.intensity.label}">Modérée</span>
+                    </td>
+                    <td class="num" th:text="${w.calories} + ' kcal'">320 kcal</td>
+                    <td class="num" th:text="${#lists.size(w.exercises)}">4</td>
+                    <td>
+                        <div class="actions">
+                            <a class="btn btn-ghost btn-sm" th:href="@{/workouts/{id}(id=${w.id})}">Détails</a>
+                            <form th:action="@{/workouts/{id}/delete(id=${w.id})}" method="post" class="inline-form"
+                                  onsubmit="return confirm('Supprimer définitivement cette séance ?');">
+                                <button class="btn btn-danger btn-sm" type="submit">Supprimer</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </article>
+
+    <div class="empty" th:if="${#lists.isEmpty(workouts)}">
+        <strong>Aucune séance sur cette période</strong>
+        Changez de filtre ou enregistrez une nouvelle séance.
+        <div style="margin-top: 1rem;">
+            <a class="btn btn-primary btn-sm" th:href="@{/workouts/new}">Enregistrer une séance</a>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

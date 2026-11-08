@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Détail de la séance')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: nav('workouts')}"></header>
+
+<main class="shell page">
+    <div th:replace="~{fragments/layout :: flash}"></div>
+
+    <section class="detail-hero">
+        <div>
+            <p class="eyebrow" th:text="${#temporals.format(workout.date, 'EEEE d MMMM yyyy')}">samedi 8 novembre 2026</p>
+            <h1 th:text="${workout.type.label}">Musculation</h1>
+            <div style="display: flex; gap: .5rem; flex-wrap: wrap; margin-top: .4rem;">
+                <span class="badge badge-blue" th:text="'Intensité ' + ${workout.intensity.label}">Intensité Modérée</span>
+                <span class="badge" th:text="${workout.durationMinutes} + ' minutes'">45 minutes</span>
+                <span class="badge badge-accent" th:text="${workout.calories} + ' kcal estimées'">320 kcal estimées</span>
+            </div>
+        </div>
+        <div class="actions">
+            <a class="btn btn-ghost" th:href="@{/workouts}">Retour</a>
+            <a class="btn btn-ghost" th:href="@{/workouts/{id}/edit(id=${workout.id})}">Modifier</a>
+            <form th:action="@{/workouts/{id}/delete(id=${workout.id})}" method="post" class="inline-form"
+                  onsubmit="return confirm('Supprimer définitivement cette séance ?');">
+                <button class="btn btn-danger" type="submit">Supprimer</button>
+            </form>
+        </div>
+    </section>
+
+    <section class="detail-stats">
+        <div class="detail-stat">
+            <span>Exercices</span>
+            <strong th:text="${#lists.size(workout.exercises)}">4</strong>
+        </div>
+        <div class="detail-stat">
+            <span>Séries</span>
+            <strong th:text="${workout.totalSets}">16</strong>
+        </div>
+        <div class="detail-stat">
+            <span>Volume soulevé</span>
+            <strong th:text="${#numbers.formatInteger(workout.volumeKg, 1, 'POINT')} + ' kg'">3 200 kg</strong>
+        </div>
+        <div class="detail-stat">
+            <span>Calories</span>
+            <strong th:text="${workout.calories} + ' kcal'">320 kcal</strong>
+        </div>
+    </section>
+
+    <div class="dashboard-grid">
+        <div class="stack">
+            <article class="card">
+                <div class="card-head">
+                    <div>
+                        <h2>Exercices réalisés</h2>
+                        <p class="muted small">Séries, répétitions, charge ou durée.</p>
+                    </div>
+                </div>
+
+                <div class="table-wrap" th:if="${!#lists.isEmpty(workout.exercises)}">
+                    <table class="data">
+                        <thead>
+                        <tr>
+                            <th>Exercice</th>
+                            <th>Séries</th>
+                            <th>Répétitions</th>
+                            <th>Charge</th>
+                            <th>Volume</th>
+                            <th>Durée / distance</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="entry : ${workout.exercises}">
+                            <td>
+                                <strong th:text="${entry.exercise.name}">Développé couché</strong>
+                                <div class="muted small" th:text="${entry.exercise.muscleGroup.label}">Pectoraux</div>
+                                <div class="muted small" th:if="${entry.comment != null}" th:text="${entry.comment}">Commentaire</div>
+                            </td>
+                            <td class="num" th:text="${entry.sets != null ? entry.sets : '—'}">4</td>
+                            <td class="num" th:text="${entry.reps != null ? entry.reps : '—'}">10</td>
+                            <td class="num" th:text="${entry.weightKg != null ? entry.weightKg + ' kg' : '—'}">60 kg</td>
+                            <td class="num" th:text="${entry.volumeKg != null ? #numbers.formatInteger(entry.volumeKg, 1, 'POINT') + ' kg' : '—'}">2 400 kg</td>
+                            <td class="num">
+                                <span th:if="${entry.durationSeconds != null}" th:text="${entry.durationSeconds / 60} + ' min'">10 min</span>
+                                <span th:if="${entry.distanceKm != null}" th:text="' · ' + ${entry.distanceKm} + ' km'"> · 8 km</span>
+                                <span th:if="${entry.durationSeconds == null and entry.distanceKm == null}">—</span>
+                            </td>
+                            <td>
+                                <div class="actions">
+                                    <form th:action="@{/workouts/{id}/exercises/{entryId}/delete(id=${workout.id}, entryId=${entry.id})}"
+                                          method="post" class="inline-form">
+                                        <button class="btn btn-danger btn-sm" type="submit">Retirer</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="empty" th:if="${#lists.isEmpty(workout.exercises)}">
+                    <strong>Aucun exercice pour l'instant</strong>
+                    Ajoutez les exercices réalisés pour calculer le volume et les records.
+                </div>
+
+                <details class="add-box" open th:if="${#lists.isEmpty(workout.exercises)}">
+                    <summary>Ajouter un exercice</summary>
+                    <form th:action="@{/workouts/{id}/exercises(id=${workout.id})}" method="post" th:object="${exerciseForm}">
+                        <div class="form-grid">
+                            <div class="field full">
+                                <label for="exerciseId">Exercice</label>
+                                <select class="input" id="exerciseId" th:field="*{exerciseId}" required>
+                                    <option value="">— Choisir dans la bibliothèque —</option>
+                                    <option th:each="e : ${library}" th:value="${e.id}"
+                                            th:text="${e.name} + ' · ' + ${e.muscleGroup.label}">Développé couché</option>
+                                </select>
+                                <p class="error-text" th:if="${#fields.hasErrors('exerciseId')}" th:errors="*{exerciseId}"></p>
+                                <p class="hint">Vous pouvez créer vos propres exercices depuis la bibliothèque.</p>
+                            </div>
+                            <div class="field">
+                                <label for="sets">Séries</label>
+                                <input class="input" type="number" id="sets" min="0" max="100" th:field="*{sets}">
+                            </div>
+                            <div class="field">
+                                <label for="reps">Répétitions</label>
+                                <input class="input" type="number" id="reps" min="0" max="1000" th:field="*{reps}">
+                            </div>
+                            <div class="field">
+                                <label for="weightKg">Charge (kg)</label>
+                                <input class="input" type="number" step="0.5" min="0" id="weightKg" th:field="*{weightKg}">
+                            </div>
+                            <div class="field">
+                                <label for="durationSeconds">Durée (secondes)</label>
+                                <input class="input" type="number" min="0" id="durationSeconds" th:field="*{durationSeconds}">
+                            </div>
+                            <div class="field">
+                                <label for="distanceKm">Distance (km)</label>
+                                <input class="input" type="number" step="0.1" min="0" id="distanceKm" th:field="*{distanceKm}">
+                            </div>
+                            <div class="field">
+                                <label for="comment">Commentaire</label>
+                                <input class="input" type="text" id="comment" th:field="*{comment}"
+                                       placeholder="Sensation, tempo...">
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn btn-primary" type="submit">Ajouter l'exercice</button>
+                        </div>
+                    </form>
+                </details>
+            </article>
+
+            <article class="card" th:if="${!#lists.isEmpty(workout.exercises)}">
+                <details class="add-box" style="margin-top: 0;">
+                    <summary>Ajouter un exercice</summary>
+                    <form th:action="@{/workouts/{id}/exercises(id=${workout.id})}" method="post" th:object="${exerciseForm}">
+                        <div class="form-grid">
+                            <div class="field full">
+                                <label for="exerciseId">Exercice</label>
+                                <select class="input" id="exerciseId" th:field="*{exerciseId}" required>
+                                    <option value="">— Choisir dans la bibliothèque —</option>
+                                    <option th:each="e : ${library}" th:value="${e.id}"
+                                            th:text="${e.name} + ' · ' + ${e.muscleGroup.label}">Développé couché</option>
+                                </select>
+                                <p class="error-text" th:if="${#fields.hasErrors('exerciseId')}" th:errors="*{exerciseId}"></p>
+                            </div>
+                            <div class="field">
+                                <label for="sets2">Séries</label>
+                                <input class="input" type="number" id="sets2" min="0" max="100" th:field="*{sets}">
+                            </div>
+                            <div class="field">
+                                <label for="reps2">Répétitions</label>
+                                <input class="input" type="number" id="reps2" min="0" max="1000" th:field="*{reps}">
+                            </div>
+                            <div class="field">
+                                <label for="weightKg2">Charge (kg)</label>
+                                <input class="input" type="number" step="0.5" min="0" id="weightKg2" th:field="*{weightKg}">
+                            </div>
+                            <div class="field">
+                                <label for="durationSeconds2">Durée (secondes)</label>
+                                <input class="input" type="number" min="0" id="durationSeconds2" th:field="*{durationSeconds}">
+                            </div>
+                            <div class="field">
+                                <label for="distanceKm2">Distance (km)</label>
+                                <input class="input" type="number" step="0.1" min="0" id="distanceKm2" th:field="*{distanceKm}">
+                            </div>
+                            <div class="field">
+                                <label for="comment2">Commentaire</label>
+                                <input class="input" type="text" id="comment2" th:field="*{comment}"
+                                       placeholder="Sensation, tempo...">
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn btn-primary" type="submit">Ajouter l'exercice</button>
+                        </div>
+                    </form>
+                </details>
+            </article>
+        </div>
+
+        <div class="stack">
+            <article class="card">
+                <h2>Notes de séance</h2>
+                <p class="muted" th:if="${workout.notes != null}" th:text="${workout.notes}">Notes...</p>
+                <p class="muted" th:if="${workout.notes == null}">Aucune note pour cette séance.</p>
+            </article>
+            <article class="card">
+                <h2>Résumé</h2>
+                <div class="metric-row">
+                    <span class="label">Date</span>
+                    <span class="value" th:text="${#temporals.format(workout.date, 'dd/MM/yyyy')}">08/11/2026</span>
+                </div>
+                <div class="metric-row">
+                    <span class="label">Type</span>
+                    <span class="badge" th:classappend="${workout.type.cssClass}" th:text="${workout.type.label}">Musculation</span>
+                </div>
+                <div class="metric-row">
+                    <span class="label">Durée</span>
+                    <span class="value" th:text="${workout.durationMinutes} + ' min'">45 min</span>
+                </div>
+                <div class="metric-row">
+                    <span class="label">Calories</span>
+                    <span class="value" th:text="${workout.calories} + ' kcal'">320 kcal</span>
+                </div>
+                <div class="metric-row">
+                    <span class="label">Créée le</span>
+                    <span class="value" th:text="${#temporals.format(workout.createdAt, 'dd/MM/yyyy HH:mm')}">08/11/2026 18:30</span>
+                </div>
+            </article>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

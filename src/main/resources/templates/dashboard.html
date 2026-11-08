@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Tableau de bord')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: nav('dashboard')}"></header>
+
+<main class="shell page">
+    <div th:replace="~{fragments/layout :: flash}"></div>
+
+    <section class="page-head">
+        <div>
+            <p class="eyebrow" th:text="${#temporals.format(#temporals.createNow(), 'EEEE d MMMM yyyy')}">lundi 8 novembre 2026</p>
+            <h1>Bonjour <span th:text="${currentUser.firstName}">Alex</span> 👋</h1>
+            <p class="muted" th:if="${dashboard.sessionsThisWeek >= dashboard.weeklyGoal}">
+                Objectif hebdomadaire atteint, belle régularité.
+            </p>
+            <p class="muted" th:if="${dashboard.sessionsThisWeek < dashboard.weeklyGoal}"
+               th:text="'Encore ' + (${dashboard.weeklyGoal} - ${dashboard.sessionsThisWeek}) + ' séance(s) pour atteindre votre objectif.'">
+                Encore 2 séances pour atteindre votre objectif.
+            </p>
+        </div>
+        <a class="btn btn-primary" th:href="@{/workouts/new}">Enregistrer une séance</a>
+    </section>
+
+    <section class="kpi-grid">
+        <article class="card kpi">
+            <span class="kpi-label">Objectif de la semaine</span>
+            <div class="kpi-value">
+                <span th:text="${dashboard.sessionsThisWeek}">3</span>
+                <small th:text="'/ ' + ${dashboard.weeklyGoal} + ' séances'">/ 4 séances</small>
+            </div>
+            <div class="progress"><span th:style="'width:' + ${dashboard.goalPercent} + '%'"></span></div>
+            <p class="kpi-foot" th:text="${dashboard.goalPercent} + ' % de l\'objectif'">75 % de l'objectif</p>
+        </article>
+
+        <article class="card kpi">
+            <span class="kpi-label">Temps d'entraînement</span>
+            <div class="kpi-value">
+                <span th:text="${dashboard.minutesThisWeek}">210</span>
+                <small>min</small>
+            </div>
+            <p class="kpi-foot" th:text="${dashboard.totalSessions} + ' séances enregistrées au total'">40 séances enregistrées au total</p>
+        </article>
+
+        <article class="card kpi kpi-accent">
+            <span class="kpi-label">Calories estimées</span>
+            <div class="kpi-value">
+                <span th:text="${#numbers.formatInteger(dashboard.caloriesThisWeek, 1, 'POINT')}">1 480</span>
+                <small>kcal</small>
+            </div>
+            <p class="kpi-foot">Estimation MET ajustée à votre poids</p>
+        </article>
+
+        <article class="card kpi">
+            <span class="kpi-label">Série en cours</span>
+            <div class="kpi-value">
+                <span th:text="${dashboard.streakWeeks}">6</span>
+                <small>semaines</small>
+            </div>
+            <p class="kpi-foot">Semaines consécutives avec au moins une séance</p>
+        </article>
+    </section>
+
+    <div class="alert alert-info" th:if="${dashboard.empty}" style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap;">
+        <span>Votre historique est vide. Enregistrez votre première séance pour débloquer les statistiques et les graphiques.</span>
+        <a class="btn btn-primary btn-sm" th:href="@{/workouts/new}">Commencer</a>
+    </div>
+
+    <section class="dashboard-grid">
+        <div class="stack">
+            <article class="card">
+                <div class="card-head">
+                    <div>
+                        <h2>7 derniers jours</h2>
+                        <p class="muted small">Minutes d'entraînement par jour</p>
+                    </div>
+                    <span class="badge badge-accent" th:text="${dashboard.minutesThisWeek} + ' min cette semaine'">210 min</span>
+                </div>
+                <div class="chart-bars">
+                    <div class="bar-col" th:each="day : ${dashboard.days}">
+                        <span class="bar-value" th:text="${day.minutes > 0 ? day.minutes : ''}">45</span>
+                        <div class="bar-track">
+                            <div class="bar" th:classappend="${day.today} ? 'today' : ''"
+                                 th:style="'height:' + ${day.percent} + '%'"></div>
+                        </div>
+                        <span class="bar-label" th:text="${day.label}">lun.</span>
+                    </div>
+                </div>
+            </article>
+
+            <article class="card">
+                <div class="card-head">
+                    <div>
+                        <h2>8 dernières semaines</h2>
+                        <p class="muted small">Nombre de séances par semaine</p>
+                    </div>
+                    <a class="badge" th:href="@{/workouts}">Voir les séances</a>
+                </div>
+                <div class="week-bars">
+                    <div class="bar-col" th:each="week : ${dashboard.weeklyHistory}">
+                        <div class="bar-track">
+                            <div class="bar" th:classappend="${week.current} ? 'current' : ''"
+                                 th:style="'height:' + ${week.percent} + '%'"></div>
+                        </div>
+                        <span class="bar-label" th:text="${week.label}">08/09</span>
+                    </div>
+                </div>
+            </article>
+
+            <article class="card">
+                <div class="card-head">
+                    <div>
+                        <h2>Dernières séances</h2>
+                        <p class="muted small">Vos cinq dernières activités</p>
+                    </div>
+                    <a class="badge" th:href="@{/workouts}">Tout voir</a>
+                </div>
+                <ul class="list" th:if="${!dashboard.recentWorkouts.isEmpty()}">
+                    <li th:each="w : ${dashboard.recentWorkouts}">
+                        <a class="list-item" th:href="@{/workouts/{id}(id=${w.id})}">
+                            <div>
+                                <strong th:text="${w.type.label}">Musculation</strong>
+                                <div class="meta">
+                                    <span th:text="${#temporals.format(w.date, 'dd MMMM yyyy')}">8 novembre</span>
+                                    · <span th:text="${w.durationMinutes} + ' min'">45 min</span>
+                                    · <span th:text="${w.calories} + ' kcal'">320 kcal</span>
+                                </div>
+                            </div>
+                            <span class="badge" th:classappend="${w.type.cssClass}" th:text="${w.type.label}">Type</span>
+                        </a>
+                    </li>
+                </ul>
+                <div class="empty" th:if="${dashboard.recentWorkouts.isEmpty()}">
+                    <strong>Aucune séance pour le moment</strong>
+                    Ajoutez votre première séance pour voir apparaître votre progression.
+                </div>
+            </article>
+        </div>
+
+        <div class="stack">
+            <article class="card">
+                <div class="card-head">
+                    <h2>Objectif hebdomadaire</h2>
+                    <span class="badge badge-accent" th:text="${dashboard.goalPercent} + ' %'">75 %</span>
+                </div>
+                <div class="progress"><span th:style="'width:' + ${dashboard.goalPercent} + '%'"></span></div>
+                <p class="muted small" th:text="${dashboard.sessionsThisWeek} + ' séance(s) sur ' + ${dashboard.weeklyGoal}">3 séance(s) sur 4</p>
+                <div class="metric-row">
+                    <span class="label">Total séances</span>
+                    <span class="value" th:text="${dashboard.totalSessions}">40</span>
+                </div>
+                <div class="metric-row">
+                    <span class="label">Total minutes</span>
+                    <span class="value" th:text="${dashboard.totalMinutes}">2 400</span>
+                </div>
+                <div class="metric-row">
+                    <span class="label">Série actuelle</span>
+                    <span class="value" th:text="${dashboard.streakWeeks} + ' sem.'">6 sem.</span>
+                </div>
+                <div style="margin-top: 1rem;">
+                    <a class="btn btn-ghost btn-sm btn-block" th:href="@{/profile}">Modifier mon objectif</a>
+                </div>
+            </article>
+
+            <article class="card">
+                <div class="card-head">
+                    <h2>Poids &amp; IMC</h2>
+                    <a class="badge" th:href="@{/measurements}">Mesures</a>
+                </div>
+                <div th:if="${dashboard.latestWeight != null}">
+                    <div class="kpi-value" style="margin-top: 0;">
+                        <span th:text="${#numbers.formatDecimal(dashboard.latestWeight, 1, 1)}">80,1</span>
+                        <small>kg</small>
+                    </div>
+                    <p class="muted small" th:if="${dashboard.weightDelta != null}"
+                       th:text="${dashboard.weightDelta < 0 ? 'Baisse de ' + #numbers.formatDecimal(-dashboard.weightDelta, 1, 1) + ' kg depuis la dernière mesure' : (dashboard.weightDelta > 0 ? 'Hausse de ' + #numbers.formatDecimal(dashboard.weightDelta, 1, 1) + ' kg depuis la dernière mesure' : 'Poids stable depuis la dernière mesure')}">
+                        Baisse de 0,4 kg depuis la dernière mesure
+                    </p>
+                    <svg class="spark" viewBox="0 0 300 100" preserveAspectRatio="none" th:if="${dashboard.weightChart.hasData}">
+                        <polygon class="spark-area" th:attr="points=${dashboard.weightChart.areaPoints}"></polygon>
+                        <polyline class="spark-line" th:attr="points=${dashboard.weightChart.points}"></polyline>
+                    </svg>
+                    <div class="metric-row">
+                        <span class="label">IMC</span>
+                        <span class="value" th:text="${#numbers.formatDecimal(dashboard.bmi, 1, 1)}">25,3</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="label">Catégorie</span>
+                        <span class="badge" th:text="${dashboard.bmiCategory}">Surpoids</span>
+                    </div>
+                    <div class="metric-row" th:if="${dashboard.targetWeight != null}">
+                        <span class="label">Objectif de poids</span>
+                        <span class="value" th:text="${#numbers.formatDecimal(dashboard.targetWeight, 1, 1)} + ' kg'">76 kg</span>
+                    </div>
+                </div>
+                <div class="empty" th:if="${dashboard.latestWeight == null}">
+                    <strong>Pas encore de mesure</strong>
+                    Enregistrez votre poids pour suivre votre évolution.
+                </div>
+            </article>
+
+            <article class="card">
+                <div class="card-head">
+                    <h2>Records personnels</h2>
+                    <span class="badge badge-warn">PR</span>
+                </div>
+                <div class="metric-row">
+                    <span class="label">Charge maximale</span>
+                    <span class="value" th:text="${dashboard.personalBest.maxWeightKg > 0 ? dashboard.personalBest.maxWeightKg + ' kg' : '—'}">60 kg</span>
+                </div>
+                <p class="muted small" style="margin: -.2rem 0 .5rem;"
+                   th:if="${dashboard.personalBest.maxWeightExercise != null}"
+                   th:text="'sur ' + ${dashboard.personalBest.maxWeightExercise}">sur Développé couché</p>
+                <div class="metric-row">
+                    <span class="label">Séance la plus longue</span>
+                    <span class="value" th:text="${dashboard.personalBest.longestMinutes > 0 ? dashboard.personalBest.longestMinutes + ' min' : '—'}">75 min</span>
+                </div>
+                <div style="margin-top: 1rem;">
+                    <a class="btn btn-ghost btn-sm btn-block" th:href="@{/exercises}">Explorer les exercices</a>
+                </div>
+            </article>
+        </div>
+    </section>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

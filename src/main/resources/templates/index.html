@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Accueil')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: nav('')}"></header>
+
+<main>
+    <section class="shell hero">
+        <div>
+            <p class="eyebrow">Fitness tracking · Spring Boot 3</p>
+            <h1>Entraînez-vous.<br>Mesurez.<br><span style="color: var(--accent)">Progressez.</span></h1>
+            <p class="lead">
+                FitTrack centralise vos séances, vos exercices, vos calories et vos mesures corporelles
+                dans un tableau de bord clair — pour voir ce qui fonctionne vraiment.
+            </p>
+            <div class="hero-actions">
+                <a class="btn btn-primary" th:href="@{/register}">Créer mon compte</a>
+                <a class="btn btn-ghost" th:href="@{/login}">Se connecter</a>
+            </div>
+            <div class="demo-box">
+                <span>Compte de démonstration prêt à l'emploi</span>
+                <span><code>demo@fittrack.app</code> · <code>Demo1234!</code></span>
+            </div>
+        </div>
+
+        <div class="preview-card" aria-hidden="true">
+            <div class="preview-head">
+                <strong style="font-size: .9rem;">Cette semaine</strong>
+                <div class="preview-dots"><span></span><span></span><span></span></div>
+            </div>
+            <div class="preview-tiles">
+                <div class="preview-tile">
+                    <div class="label">Séances</div>
+                    <div class="value">4 <em>/ 4</em></div>
+                </div>
+                <div class="preview-tile">
+                    <div class="label">Volume horaire</div>
+                    <div class="value">3 h 45</div>
+                </div>
+                <div class="preview-tile">
+                    <div class="label">Calories</div>
+                    <div class="value">1 480</div>
+                </div>
+                <div class="preview-tile">
+                    <div class="label">Poids</div>
+                    <div class="value">80,1 <em>kg</em></div>
+                </div>
+            </div>
+            <div class="preview-chart">
+                <span style="height: 45%"></span>
+                <span style="height: 72%"></span>
+                <span style="height: 30%"></span>
+                <span style="height: 88%"></span>
+                <span style="height: 54%"></span>
+                <span style="height: 100%"></span>
+                <span style="height: 62%"></span>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="shell">
+            <div class="section-head">
+                <p class="eyebrow">Fonctionnalités</p>
+                <h2>Tout le suivi au même endroit</h2>
+                <p class="muted">Une application pensée pour la pratique réelle : rapide à remplir, agréable à consulter.</p>
+            </div>
+            <div class="feature-grid">
+                <article class="feature">
+                    <div class="feature-icon">01</div>
+                    <h3>Séances détaillées</h3>
+                    <p>Type, durée, intensité, notes, exercices, séries, répétitions, charges, distance et volume soulevé.</p>
+                </article>
+                <article class="feature">
+                    <div class="feature-icon">02</div>
+                    <h3>Calories estimées</h3>
+                    <p>Calcul basé sur les valeurs MET, l'intensité de la séance et votre poids le plus récent.</p>
+                </article>
+                <article class="feature">
+                    <div class="feature-icon">03</div>
+                    <h3>Bibliothèque d'exercices</h3>
+                    <p>32 exercices prêts à l'emploi, filtrables par groupe musculaire, avec vos exercices personnels.</p>
+                </article>
+                <article class="feature">
+                    <div class="feature-icon">04</div>
+                    <h3>Mesures corporelles</h3>
+                    <p>Poids, masse grasse, tour de taille et de poitrine, avec IMC et courbe d'évolution.</p>
+                </article>
+                <article class="feature">
+                    <div class="feature-icon">05</div>
+                    <h3>Objectifs &amp; série</h3>
+                    <p>Objectif hebdomadaire de séances, progression visuelle et semaines consécutives d'entraînement.</p>
+                </article>
+                <article class="feature">
+                    <div class="feature-icon">06</div>
+                    <h3>API REST &amp; sécurité</h3>
+                    <p>Statistiques exposées en JSON, authentification Spring Security, données strictement isolées par compte.</p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="shell">
+            <div class="section-head">
+                <p class="eyebrow">En trois étapes</p>
+                <h2>Un rituel de suivi en moins d'une minute</h2>
+            </div>
+            <div class="steps">
+                <article class="step">
+                    <h3>Créez votre profil</h3>
+                    <p>Taille, date de naissance, niveau d'activité et objectif de séances par semaine.</p>
+                </article>
+                <article class="step">
+                    <h3>Enregistrez vos séances</h3>
+                    <p>Ajoutez la séance en quelques secondes, puis complétez les exercices réalisés.</p>
+                </article>
+                <article class="step">
+                    <h3>Suivez la progression</h3>
+                    <p>Analysez minutes, calories, volume, poids et régularité semaine après semaine.</p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="shell">
+            <div class="section-head">
+                <p class="eyebrow">Stack technique</p>
+                <h2>Une base solide, prête à évoluer</h2>
+              </div>
+            <div class="tech-strip">
+                <span>Java 17</span>
+                <span>Spring Boot 3.2</span>
+                <span>Spring Security</span>
+                <span>Spring Data JPA</span>
+                <span>Thymeleaf</span>
+                <span>H2 / MySQL</span>
+                <span>Maven</span>
+                <span>Tests JUnit 5</span>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

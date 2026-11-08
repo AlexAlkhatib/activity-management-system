@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Inscription')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: nav('')}"></header>
+
+<main class="auth-shell">
+    <section class="auth-visual">
+        <p class="eyebrow">Nouveau départ</p>
+        <h1>Votre progression commence ici.</h1>
+        <p class="lead">
+            Créez votre compte, définissez votre objectif hebdomadaire et enregistrez votre première séance
+            en moins d'une minute.
+        </p>
+        <ul class="list" style="max-width: 340px;">
+            <li class="list-item"><span>Suivi des séances et des charges</span><span class="badge badge-accent">Gratuit</span></li>
+            <li class="list-item"><span>Statistiques et courbe de poids</span><span class="badge badge-blue">Instantané</span></li>
+            <li class="list-item"><span>Données privées et isolées</span><span class="badge">Sécurisé</span></li>
+        </ul>
+    </section>
+
+    <section class="auth-panel">
+        <div class="auth-card">
+            <div class="card">
+                <h2>Créer un compte</h2>
+                <p class="muted small" style="margin-bottom: 1.2rem;">Quelques informations suffisent.</p>
+
+                <form th:action="@{/register}" method="post" th:object="${form}">
+                    <div class="form-grid">
+                        <div class="field">
+                            <label for="firstName">Prénom</label>
+                            <input class="input" type="text" id="firstName" th:field="*{firstName}"
+                                   autocomplete="given-name" required>
+                            <p class="error-text" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></p>
+                        </div>
+                        <div class="field">
+                            <label for="lastName">Nom</label>
+                            <input class="input" type="text" id="lastName" th:field="*{lastName}"
+                                   autocomplete="family-name" required>
+                            <p class="error-text" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></p>
+                        </div>
+                        <div class="field full">
+                            <label for="email">Adresse e-mail</label>
+                            <input class="input" type="email" id="email" th:field="*{email}"
+                                   autocomplete="email" placeholder="vous@exemple.fr" required>
+                            <p class="error-text" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></p>
+                        </div>
+                        <div class="field">
+                            <label for="password">Mot de passe</label>
+                            <input class="input" type="password" id="password" th:field="*{password}"
+                                   autocomplete="new-password" required>
+                            <p class="hint">8 caractères minimum.</p>
+                            <p class="error-text" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></p>
+                        </div>
+                        <div class="field">
+                            <label for="confirmPassword">Confirmation</label>
+                            <input class="input" type="password" id="confirmPassword" th:field="*{confirmPassword}"
+                                   autocomplete="new-password" required>
+                            <p class="error-text" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></p>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button class="btn btn-primary" type="submit">Créer mon compte</button>
+                        <a class="btn btn-ghost" th:href="@{/login}">J'ai déjà un compte</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+</main>
+
+</body>
+</html>
