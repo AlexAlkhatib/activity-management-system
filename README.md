@@ -1,4 +1,4 @@
-# FitTrack — Application de fitness tracking
+# 🏃FitTrack — Application de fitness tracking
 
 **FitTrack** est une application web de suivi d'entraînement qui transforme un simple gestionnaire
 d'activités en un véritable outil de fitness tracking : séances détaillées, bibliothèque d'exercices,
